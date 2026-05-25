@@ -1,0 +1,1863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sai Rupesh Kagga — Healthcare Technology Architect</title>
+  <meta name="description" content="Senior Software Developer & Healthcare Interoperability Architect. FHIR APIs, Cloud-Native Microservices, AI in Healthcare." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #0a0a0a;
+      --bg2:       #111111;
+      --surface:   #1a1a1a;
+      --card:      rgba(27, 27, 27, 0.95);
+      --border:    rgba(214, 160, 76, 0.15);
+      --border2:   rgba(214, 160, 76, 0.4);
+      --blue:      #D6A04C;
+      --blue-dark: #b8862e;
+      --cyan:      #E9E3D9;
+      --green:     #8fae82;
+      --purple:    #b39ddb;
+      --gold:      #D6A04C;
+      --text:      #ffffff;
+      --muted:     #a3a3a3;
+      --faint:     #272727;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+    }
+
+    /* ─── SCROLLBAR ─── */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 2px; }
+
+    /* ─── CANVAS ─── */
+    #hero-canvas {
+      position: fixed; top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0; pointer-events: none;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.1rem 3rem;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 20px rgba(0,0,0,0.4);
+      transition: all 0.3s;
+    }
+    nav.scrolled {
+      background: rgba(10, 10, 10, 0.97);
+      padding: 0.8rem 3rem;
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700; font-size: 1.15rem; letter-spacing: -0.02em;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: var(--muted); text-decoration: none; font-size: 0.83rem;
+      font-weight: 500; letter-spacing: 0.02em;
+      transition: color .2s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+      height: 1px; background: var(--cyan); transform: scaleX(0);
+      transition: transform .3s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    /* ─── HERO ─── */
+    #hero {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; z-index: 1; padding: 7rem 2rem 4rem;
+      text-align: center; overflow: hidden;
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 900px; }
+
+    /* ── PROFILE PHOTO ── */
+    .hero-photo-wrap {
+      position: relative; display: inline-block;
+      margin-bottom: 2rem; opacity: 0;
+    }
+    .hero-photo {
+      width: 120px; height: 120px; border-radius: 50%;
+      object-fit: cover; object-position: top;
+      border: 3px solid transparent;
+      background: linear-gradient(var(--bg), var(--bg)) padding-box,
+                  linear-gradient(135deg, var(--blue), var(--cyan)) border-box;
+      box-shadow: 0 0 30px rgba(214,160,76,0.25), 0 4px 20px rgba(214,160,76,0.1);
+    }
+    .hero-photo-ring {
+      position: absolute; inset: -8px; border-radius: 50%;
+      border: 1px solid rgba(214,160,76,0.25);
+      animation: spin-slow 12s linear infinite;
+    }
+    .hero-photo-ring::before {
+      content: ''; position: absolute; top: 4px; left: 50%;
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--cyan); transform: translateX(-50%);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+    @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+    .about-photo-wrap {
+      width: 200px; height: 200px; border-radius: 50%; flex-shrink: 0;
+      position: relative; margin-bottom: 1.5rem;
+    }
+    .about-photo {
+      width: 100%; height: 100%; border-radius: 50%;
+      object-fit: cover; object-position: top;
+      border: 3px solid transparent;
+      background: linear-gradient(var(--surface), var(--surface)) padding-box,
+                  linear-gradient(135deg, var(--blue), var(--cyan)) border-box;
+      box-shadow: 0 4px 20px rgba(214,160,76,0.2);
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.05rem; letter-spacing: 0.1em; color: var(--cyan);
+      margin-bottom: 1.75rem; opacity: 0;
+    }
+    .hero-eyebrow-line { width: 32px; height: 1px; background: var(--cyan); }
+
+    .hero-name {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 700; letter-spacing: -0.04em; line-height: 1;
+      opacity: 0;
+    }
+    .name-white { color: #ffffff; }
+    .name-grad {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--cyan) 50%, #a78bfa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      display: block;
+    }
+
+    .hero-title {
+      margin-top: 1.25rem;
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--muted); font-weight: 400; letter-spacing: 0.01em;
+      opacity: 0;
+    }
+    .hero-title strong { color: var(--text); font-weight: 600; }
+
+    .hero-divider {
+      width: 60px; height: 2px; margin: 2rem auto;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      border-radius: 2px; opacity: 0;
+    }
+
+    .hero-tags {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem;
+      margin-bottom: 2.5rem; opacity: 0;
+    }
+    .htag {
+      padding: 0.35rem 1rem; border-radius: 100px;
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.03em;
+      border: 1px solid var(--border2);
+      background: rgba(59, 130, 246, 0.06);
+      color: var(--muted);
+      transition: all .3s;
+    }
+    .htag:hover { border-color: var(--cyan); color: var(--cyan); background: rgba(214,160,76,0.06); }
+
+    .hero-cta { display: flex; gap: 1rem; justify-content: center; opacity: 0; }
+    .btn {
+      padding: 0.85rem 2rem; border-radius: 10px;
+      font-size: 0.88rem; font-weight: 600; letter-spacing: 0.02em;
+      text-decoration: none; transition: all .25s; border: none; cursor: pointer;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: #fff; box-shadow: 0 4px 16px rgba(214,160,76,0.35);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(214,160,76,0.45); }
+    .btn-ghost {
+      background: rgba(255,255,255,0.04);
+      color: var(--text); border: 1px solid var(--border2);
+    }
+    .btn-ghost:hover { background: rgba(255,255,255,0.08); border-color: var(--cyan); transform: translateY(-2px); }
+
+    /* Stats row */
+    .hero-stats {
+      display: flex; gap: 0; justify-content: center; flex-wrap: wrap;
+      margin-top: 4rem; opacity: 0;
+    }
+    .stat-item {
+      padding: 1.5rem 2.5rem; text-align: center;
+      border-right: 1px solid var(--border);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.2rem; font-weight: 700; letter-spacing: -0.04em;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-lbl { font-size: 0.88rem; color: var(--muted); margin-top: 0.3rem; letter-spacing: 0.02em; }
+
+    /* scroll indicator */
+    .scroll-hint {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      opacity: 0; animation: bounce 2s 2s infinite;
+    }
+    .scroll-hint span { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .scroll-arrow { width: 20px; height: 20px; border-right: 2px solid var(--cyan); border-bottom: 2px solid var(--cyan); transform: rotate(45deg); }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+    /* ─── SECTIONS ─── */
+    section { position: relative; z-index: 2; }
+
+    .section-wrap { max-width: 1140px; margin-inline: auto; padding: 6rem 2rem; }
+
+    .s-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem; letter-spacing: 0.14em; color: var(--cyan);
+      text-transform: uppercase; margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 0.6rem;
+    }
+    .s-label::before { content: ''; }
+    .s-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 700; letter-spacing: -0.03em; line-height: 1.15;
+      margin-bottom: 1rem;
+    }
+    .s-sub { color: var(--muted); max-width: 620px; font-size: 1.05rem; line-height: 1.7; }
+    .accent-bar {
+      width: 48px; height: 3px; border-radius: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      margin-bottom: 2rem;
+    }
+
+    /* ─── ABOUT ─── */
+    #about { background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 100%); }
+    .about-grid { display: grid; grid-template-columns: 1fr 1.1fr; gap: 5rem; align-items: start; margin-top: 3rem; }
+    .about-text p { color: var(--muted); line-height: 1.8; font-size: 1.05rem; margin-bottom: 1.1rem; }
+    .about-text p strong { color: var(--text); }
+    .about-pills { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+    .pill {
+      padding: 0.3rem 0.8rem; border-radius: 6px;
+      font-size: 0.85rem; font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(214,160,76,0.08); color: var(--blue);
+      border: 1px solid rgba(214,160,76,0.2);
+    }
+    .about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .acard {
+      padding: 1.4rem; border-radius: 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+      transition: all .3s; cursor: default;
+      transform-style: preserve-3d;
+    }
+    .acard:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(214,160,76,0.12); }
+    .acard-icon { font-size: 1.5rem; margin-bottom: 0.6rem; }
+    .acard h4 { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.35rem; }
+    .acard p { font-size: 0.92rem; color: var(--muted); line-height: 1.6; }
+
+    /* ─── EXPERTISE ─── */
+    #expertise { background: var(--bg2); }
+    .expertise-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem; }
+    .ecard {
+      padding: 1.75rem; border-radius: 18px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      transition: all .35s; position: relative; overflow: hidden;
+      cursor: default;
+    }
+    .ecard::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at top left, rgba(214,160,76,0.05), transparent 60%);
+      opacity: 0; transition: opacity .3s;
+    }
+    .ecard:hover { border-color: var(--border2); transform: translateY(-6px) rotateX(2deg); box-shadow: 0 20px 50px rgba(214,160,76,0.15); }
+    .ecard:hover::before { opacity: 1; }
+    .ecard-icon {
+      width: 44px; height: 44px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 1.1rem;
+    }
+    .ecard h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .ecard p { font-size: 0.95rem; color: var(--muted); line-height: 1.65; }
+    .ecard-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1rem; }
+    .echip {
+      padding: 0.22rem 0.65rem; border-radius: 5px;
+      font-size: 0.8rem; font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+      background: rgba(214,160,76,0.08); color: var(--cyan);
+    }
+
+    /* ─── EXPERIENCE ─── */
+    #experience { background: linear-gradient(180deg, var(--bg2) 0%, var(--bg) 100%); }
+    .exp-timeline { margin-top: 3rem; position: relative; padding-left: 2rem; }
+    .exp-timeline::before {
+      content: ''; position: absolute; left: 0; top: 12px; bottom: 12px;
+      width: 2px;
+      background: linear-gradient(180deg, var(--blue), var(--cyan), transparent);
+      border-radius: 2px;
+    }
+    .exp-item { display: flex; gap: 2rem; margin-bottom: 2rem; position: relative; }
+    .exp-dot {
+      position: absolute; left: -2.55rem; top: 12px;
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--cyan);
+      flex-shrink: 0;
+    }
+    .exp-card {
+      flex: 1; padding: 1.75rem; border-radius: 18px;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      transition: all .3s;
+    }
+    .exp-card:hover { border-color: var(--border2); transform: translateX(4px); box-shadow: 0 16px 40px rgba(214,160,76,0.12); }
+    .exp-header { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; }
+    .exp-role { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 700; }
+    .exp-co {
+      padding: 0.2rem 0.75rem; border-radius: 6px;
+      font-size: 0.92rem; font-weight: 600; color: var(--cyan);
+      background: rgba(214,160,76,0.08); border: 1px solid rgba(214,160,76,0.2);
+    }
+    .exp-date { margin-left: auto; font-size: 0.88rem; color: var(--muted); font-family: 'JetBrains Mono', monospace; }
+    .exp-body { font-size: 0.95rem; color: var(--muted); line-height: 1.7; }
+    .exp-body ul { padding-left: 1.1rem; margin-top: 0.6rem; }
+    .exp-body li { margin-bottom: 0.4rem; }
+
+    /* ─── PUBLICATIONS ─── */
+    #publications { background: var(--bg); }
+
+    .scholar-bar {
+      display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 3rem;
+      padding: 1.5rem; border-radius: 18px;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      align-items: center;
+    }
+    .scholar-metric { text-align: center; padding: 0 1.5rem; border-right: 1px solid var(--border); }
+    .scholar-metric:last-of-type { border-right: none; }
+    .sm-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .sm-lbl { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .scholar-link-btn {
+      margin-left: auto; display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 1.25rem; border-radius: 8px; text-decoration: none;
+      border: 1px solid var(--border2); color: var(--cyan);
+      font-size: 0.8rem; font-weight: 600;
+      background: rgba(214,160,76,0.04);
+      transition: all .2s;
+    }
+    .scholar-link-btn:hover { background: rgba(214,160,76,0.08); transform: translateY(-1px); }
+
+    .pub-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.25rem; }
+    .pub-card {
+      padding: 1.75rem; border-radius: 18px;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      transition: all .35s; display: flex; flex-direction: column;
+      position: relative; overflow: hidden;
+    }
+    .pub-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--blue), var(--cyan));
+      opacity: 0; transition: opacity .3s;
+    }
+    .pub-card:hover { border-color: var(--border2); transform: translateY(-5px); box-shadow: 0 20px 50px rgba(214,160,76,0.15); }
+    .pub-card:hover::after { opacity: 1; }
+    .pub-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.25rem 0.75rem; border-radius: 6px;
+      font-size: 0.7rem; font-weight: 600; letter-spacing: 0.04em;
+      align-self: flex-start; margin-bottom: 0.9rem;
+    }
+    .pb-journal { background: rgba(16,185,129,0.12); color: var(--green); }
+    .pb-article { background: rgba(139,92,246,0.12); color: var(--purple); }
+    .pb-conf { background: rgba(245,158,11,0.12); color: var(--gold); }
+    .pb-research { background: rgba(214,160,76,0.08); color: var(--cyan); }
+    .pub-cites {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.2rem 0.6rem; border-radius: 5px;
+      font-size: 0.68rem; font-weight: 700;
+      background: rgba(214,160,76,0.10); color: var(--blue);
+      margin-left: 0.4rem;
+    }
+    .pub-card h3 { font-size: 0.92rem; font-weight: 700; line-height: 1.5; margin-bottom: 0.75rem; }
+    .pub-card p { font-size: 0.8rem; color: var(--muted); line-height: 1.65; flex: 1; }
+    .pub-footer {
+      margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--border);
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 0.5rem;
+    }
+    .pub-meta-info { font-size: 0.73rem; color: var(--muted); line-height: 1.6; }
+    .pub-meta-info span { display: block; }
+    .pub-read {
+      font-size: 0.78rem; font-weight: 600; color: var(--blue);
+      text-decoration: none; white-space: nowrap;
+      transition: color .2s; display: inline-flex; align-items: center; gap: 0.3rem;
+    }
+    .pub-read:hover { color: var(--cyan); }
+
+    .pub-featured {
+      margin-top: 1.5rem; padding: 1.25rem 1.75rem;
+      border-radius: 14px; border: 1px solid var(--border);
+      background: var(--card); box-shadow: 0 2px 10px rgba(214,160,76,0.06);
+      display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;
+    }
+    .pub-featured-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .pfl {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.4rem 1rem; border-radius: 8px;
+      font-size: 0.78rem; font-weight: 600; text-decoration: none;
+      border: 1px solid var(--border2); color: var(--text);
+      background: rgba(214,160,76,0.05);
+      transition: all .2s;
+    }
+    .pfl:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
+
+    /* ─── RECOGNITION ─── */
+    #recognition { background: var(--bg2); }
+    .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem; }
+    .rcard {
+      padding: 2rem; border-radius: 20px;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      transition: all .35s; position: relative; overflow: hidden;
+    }
+    .rcard-glow {
+      position: absolute; top: -40px; right: -40px;
+      width: 120px; height: 120px; border-radius: 50%;
+      opacity: 0.04; transition: opacity .3s;
+    }
+    .rcard:hover .rcard-glow { opacity: 0.10; }
+    .rcard:hover { border-color: var(--border2); transform: translateY(-6px); box-shadow: 0 20px 50px rgba(214,160,76,0.15); }
+    .rcard-icon { font-size: 2rem; margin-bottom: 1rem; }
+    .rcard h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .rcard-org { font-size: 0.9rem; font-weight: 600; margin-bottom: 0.65rem; }
+    .rcard p { font-size: 0.95rem; color: var(--muted); line-height: 1.65; }
+    .rcard-top { position: absolute; top: 0; left: 1.5rem; right: 1.5rem; height: 2px; border-radius: 0 0 4px 4px; }
+
+    /* ─── IMPACT ─── */
+    #impact { background: var(--bg); }
+    .impact-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-top: 3rem; }
+    .icard {
+      padding: 2rem; border-radius: 20px; text-align: center;
+      background: var(--card); border: 1px solid var(--border);
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      position: relative; overflow: hidden;
+      transition: all .3s;
+    }
+    .icard:hover { border-color: var(--border2); transform: translateY(-4px); box-shadow: 0 16px 40px rgba(214,160,76,0.12); }
+    .icard::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at center bottom, rgba(214,160,76,0.04), transparent 70%);
+    }
+    .icard-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 3rem; font-weight: 700; letter-spacing: -0.04em;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      position: relative;
+    }
+    .icard-lbl { font-size: 0.95rem; color: var(--muted); margin-top: 0.4rem; position: relative; }
+    .eb1a-callout {
+      margin-top: 2rem; padding: 2.5rem;
+      border-radius: 20px; border: 1px solid rgba(214,160,76,0.25);
+      background: linear-gradient(135deg, rgba(214,160,76,0.04), rgba(2,132,199,0.03));
+      box-shadow: 0 2px 14px rgba(0,0,0,0.3);
+      display: grid; grid-template-columns: auto 1fr; gap: 2rem; align-items: center;
+    }
+    .eb1a-badge {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.75rem; flex-shrink: 0;
+      box-shadow: 0 4px 20px rgba(214,160,76,0.3);
+    }
+    .eb1a-text h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+    .eb1a-text p { font-size: 0.85rem; color: var(--muted); line-height: 1.75; }
+    .eb1a-text p strong { color: var(--text); }
+
+    /* ─── CONTACT ─── */
+    #contact { background: var(--bg2); }
+    .contact-inner { max-width: 680px; margin-inline: auto; text-align: center; }
+    .contact-links { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; margin-top: 2.5rem; }
+    .clink {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.85rem 1.75rem; border-radius: 12px;
+      border: 1px solid var(--border); background: var(--card);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      color: var(--text); text-decoration: none;
+      font-size: 0.85rem; font-weight: 500;
+      transition: all .25s;
+    }
+    .clink:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-3px); box-shadow: 0 10px 30px rgba(214,160,76,0.18); }
+    .clink svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: 2.5rem; text-align: center;
+    }
+    footer p { font-size: 0.8rem; color: var(--muted); line-height: 1.8; }
+    footer a { color: var(--blue); text-decoration: none; }
+    footer a:hover { color: var(--cyan); }
+
+    /* ─── REVEAL ANIMATIONS ─── */
+    .reveal { opacity: 0; transform: translateY(32px); }
+
+    /* ─── TILT 3D ─── */
+    .tilt { transform-style: preserve-3d; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .expertise-grid { grid-template-columns: repeat(2, 1fr); }
+      .rec-grid { grid-template-columns: repeat(2, 1fr); }
+      .impact-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.25rem; }
+      .nav-links { gap: 1.25rem; display: none; }
+      .about-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+      .about-cards { grid-template-columns: 1fr 1fr; }
+      .expertise-grid { grid-template-columns: 1fr; }
+      .pub-grid { grid-template-columns: 1fr; }
+      .rec-grid { grid-template-columns: 1fr; }
+      .impact-grid { grid-template-columns: 1fr 1fr; }
+      .eb1a-callout { grid-template-columns: 1fr; text-align: center; }
+      .stat-item { padding: 1rem 1.25rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- THREE.JS CANVAS -->
+<canvas id="hero-canvas"></canvas>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <span class="nav-logo">Sai Rupesh Kagga</span>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#expertise">Expertise</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#publications">Research</a></li>
+    <li><a href="#speaking">Speaking</a></li>
+    <li><a href="#recognition">Recognition</a></li>
+    <li><a href="#certifications">Certifications</a></li>
+    <li><a href="#education">Education</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════ HERO ═══════════════ -->
+<section id="hero">
+  <div class="hero-content">
+    <div class="hero-photo-wrap" id="hero-photo">
+      <img src="profile.jpg" alt="Sai Rupesh Kagga" class="hero-photo" />
+      <div class="hero-photo-ring"></div>
+    </div>
+    <div class="hero-eyebrow" id="hero-eyebrow">
+      <span class="hero-eyebrow-line"></span>
+      Senior Software Developer · Healthcare Interoperability Architect
+      <span class="hero-eyebrow-line"></span>
+    </div>
+    <h1 class="hero-name" id="hero-name">
+      <span class="name-white">Sai Rupesh</span>
+      <span class="name-grad">Kagga</span>
+    </h1>
+    <p class="hero-title" id="hero-title">
+      <strong>Healthcare Interoperability Architect</strong> &amp; Published Researcher<br />
+      Building the future of clinical data exchange at national scale
+    </p>
+    <div class="hero-divider" id="hero-div"></div>
+    <div class="hero-tags" id="hero-tags">
+      <span class="htag">FHIR Standards</span>
+      <span class="htag">Microservices</span>
+      <span class="htag">Apigee</span>
+      <span class="htag">Apache Camel</span>
+      <span class="htag">Cloud-Native</span>
+      <span class="htag">AI in Healthcare</span>
+      <span class="htag">Spring Boot</span>
+      <span class="htag">Kubernetes</span>
+    </div>
+    <div class="hero-cta" id="hero-cta">
+      <a href="#publications" class="btn btn-primary">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+        View Research
+      </a>
+      <a href="#contact" class="btn btn-ghost">Get in Touch</a>
+    </div>
+    <div class="hero-stats" id="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">9+</div>
+        <div class="stat-lbl">Years in Enterprise IT</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">9</div>
+        <div class="stat-lbl">Research Publications</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">30+</div>
+        <div class="stat-lbl">Citations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">7</div>
+        <div class="stat-lbl">Industry Judging Roles</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-hint" id="scroll-hint">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- ═══════════════ ABOUT ═══════════════ -->
+<section id="about">
+  <div class="section-wrap">
+    <div class="about-grid">
+      <div class="about-left reveal">
+        <div class="about-photo-wrap">
+          <img src="profile.jpg" alt="Sai Rupesh Kagga" class="about-photo" />
+        </div>
+        <p class="s-label">About</p>
+        <h2 class="s-title">Pioneering Healthcare<br />Interoperability at Scale</h2>
+        <div class="accent-bar"></div>
+        <div class="about-text">
+          <p>
+            I am <strong>Sai Rupesh Kagga</strong>, a Senior Software Developer and Healthcare Interoperability Architect
+            at <strong>SanQuest Inc.</strong> with over <strong>9 years</strong> of enterprise engineering
+            experience — 7+ of which have been dedicated to transforming how healthcare systems
+            communicate across the United States.
+          </p>
+          <p>
+            My work sits at the intersection of clinical standards, cloud architecture, and applied AI.
+            I design systems that move patient data securely and in real time across complex healthcare
+            ecosystems — from national FHIR API platforms to dialysis interoperability frameworks —
+            directly improving outcomes for millions of patients.
+          </p>
+          <p>
+            Beyond engineering, I contribute to the healthcare technology community as a
+            <strong>published researcher</strong> with 9 peer-reviewed papers and 30+ citations on
+            Google Scholar, and as an <strong>expert judge</strong> for global technology award programs.
+          </p>
+          <p style="font-size:0.82rem; color: var(--muted);">
+            ORCID:
+            <a href="https://orcid.org/0009-0000-7893-3861" target="_blank" rel="noopener"
+              style="color:var(--cyan);text-decoration:none;">0009-0000-7893-3861</a>
+          </p>
+        </div>
+
+        <!-- Quote -->
+        <blockquote style="
+          margin-top: 1.75rem;
+          padding: 1.25rem 1.5rem;
+          border-left: 3px solid var(--cyan);
+          background: rgba(214,160,76,0.04);
+          border-radius: 0 12px 12px 0;
+        ">
+          <p style="font-size:0.95rem;color:var(--text);font-style:italic;line-height:1.7;margin:0;">
+            "It's not just about numbers. A missed payment could affect someone's treatment,
+            and that's what keeps me focused."
+          </p>
+          <cite style="display:block;margin-top:0.6rem;font-size:0.75rem;color:var(--muted);font-style:normal;">
+            — Sai Rupesh Kagga, <a href="https://www.netnewsledger.com/2025/07/31/keeping-dialysis-care-running-smoothly-with-smarter-data/" target="_blank" rel="noopener" style="color:var(--cyan);text-decoration:none;">NetNewsLedger, July 2025</a>
+          </cite>
+        </blockquote>
+        <div class="about-pills">
+          <span class="pill">FHIR R4</span><span class="pill">HL7</span>
+          <span class="pill">Apache Camel</span><span class="pill">Apigee</span>
+          <span class="pill">Spring Boot</span><span class="pill">Kubernetes</span>
+          <span class="pill">AWS</span><span class="pill">GCP</span><span class="pill">Azure</span>
+          <span class="pill">Denodo</span><span class="pill">BigQuery</span><span class="pill">Kafka</span>
+          <span class="pill">HIPAA</span><span class="pill">GDPR</span>
+        </div>
+      </div>
+      <div class="about-cards reveal">
+        <div class="acard tilt">
+          <div class="acard-icon">🏥</div>
+          <h4>Healthcare Interoperability Architect</h4>
+          <p>FHIR, HL7, HIPAA-compliant enterprise integration across national health systems</p>
+        </div>
+        <div class="acard tilt">
+          <div class="acard-icon">📄</div>
+          <h4>Published Researcher</h4>
+          <p>9 peer-reviewed papers · 30+ citations · Google Scholar indexed</p>
+        </div>
+        <div class="acard tilt">
+          <div class="acard-icon">⚖️</div>
+          <h4>Industry Judge</h4>
+          <p>Evaluates AI &amp; tech innovations for global Business Intelligence Group award programs</p>
+        </div>
+        <div class="acard tilt">
+          <div class="acard-icon">☁️</div>
+          <h4>Cloud-Native Expert</h4>
+          <p>Architects scalable, secure microservices on AWS, Azure, GCP with Kubernetes</p>
+        </div>
+        <div class="acard tilt">
+          <div class="acard-icon">🤖</div>
+          <h4>AI in Healthcare</h4>
+          <p>Multi-agent LLMs, federated learning, and clinical AI under HIPAA &amp; GDPR</p>
+        </div>
+        <div class="acard tilt">
+          <div class="acard-icon">🌐</div>
+          <h4>Thought Leader</h4>
+          <p>Featured in NetNewsLedger · Keynote Speaker at ICAEAS 2025 &amp; WCSC 2026</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ EXPERTISE ═══════════════ -->
+<section id="expertise">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Expertise</p>
+      <h2 class="s-title">Technical Specializations</h2>
+      <div class="accent-bar"></div>
+      <p class="s-sub">A deep stack spanning healthcare standards, enterprise middleware, cloud infrastructure, and modern AI integration patterns.</p>
+    </div>
+    <div class="expertise-grid">
+
+      <div class="ecard tilt reveal">
+        <div class="ecard-icon" style="background:rgba(214,160,76,0.08);">🏥</div>
+        <h3>Healthcare Interoperability</h3>
+        <p>Architecting FHIR-compliant APIs and HL7 integration layers for seamless clinical data exchange across dialysis platforms, EHRs, and payer networks at national scale.</p>
+        <div class="ecard-chips">
+          <span class="echip">FHIR R4</span><span class="echip">HL7 v2/v3</span>
+          <span class="echip">HAPI FHIR</span><span class="echip">SMART on FHIR</span><span class="echip">CDA</span>
+        </div>
+      </div>
+
+      <div class="ecard tilt reveal">
+        <div class="ecard-icon" style="background:rgba(214,160,76,0.08);">🔀</div>
+        <h3>Enterprise Integration</h3>
+        <p>Designing real-time data integration workflows using Apache Camel and Red Hat Fuse, connecting disparate clinical platforms with reliability and zero data loss.</p>
+        <div class="ecard-chips">
+          <span class="echip">Apache Camel</span><span class="echip">Red Hat Fuse</span>
+          <span class="echip">MuleSoft</span><span class="echip">Kafka</span><span class="echip">REST/SOAP</span>
+        </div>
+      </div>
+
+      <div class="ecard tilt reveal">
+        <div class="ecard-icon" style="background:rgba(139,92,246,0.12);">🌐</div>
+        <h3>API Management &amp; Gateway</h3>
+        <p>Designing national-scale API ecosystems on Apigee with OAuth 2.0, rate limiting, threat protection, and multi-tenant developer portal experiences.</p>
+        <div class="ecard-chips">
+          <span class="echip">Apigee</span><span class="echip">OAuth 2.0</span>
+          <span class="echip">OpenAPI</span><span class="echip">Kong</span><span class="echip">API Security</span>
+        </div>
+      </div>
+
+      <div class="ecard tilt reveal">
+        <div class="ecard-icon" style="background:rgba(16,185,129,0.12);">⚙️</div>
+        <h3>Microservices Architecture</h3>
+        <p>Building cloud-native microservices with Spring Boot and Kubernetes for modular, independently deployable healthcare data services at enterprise scale.</p>
+        <div class="ecard-chips">
+          <span class="echip">Spring Boot</span><span class="echip">Java</span>
+          <span class="echip">Docker</span><span class="echip">Kubernetes</span><span class="echip">gRPC</span>
+        </div>
+      </div>
+
+      <div class="ecard tilt reveal">
+        <div class="ecard-icon" style="background:rgba(245,158,11,0.12);">☁️</div>
+        <h3>Cloud-Native &amp; Data Virtualization</h3>
+        <p>Deploying HIPAA-compliant healthcare workloads on AWS, Azure, and GCP. Unified data access with Denodo and Google Pub/Sub across distributed health systems.</p>
+        <div class="ecard-chips">
+          <span class="echip">AWS</span><span class="echip">Azure</span><span class="echip">GCP</span>
+          <span class="echip">Denodo</span><span class="echip">Pub/Sub</span>
+          <span class="echip" style="background:rgba(255,153,0,0.12);color:#ff9900;">SAA-C02 Certified</span>
+        </div>
+      </div>
+
+      <div class="ecard tilt reveal">
+        <div class="ecard-icon" style="background:rgba(239,68,68,0.12);">🤖</div>
+        <h3>AI &amp; LLM in Healthcare</h3>
+        <p>Multi-agent LLMs, federated AI for clinical diagnostics, conversational AI for health benefits navigation — all with HIPAA, GDPR, and FHIR compliance.</p>
+        <div class="ecard-chips">
+          <span class="echip">LLM Agents</span><span class="echip">Federated AI</span>
+          <span class="echip">HIPAA/GDPR</span><span class="echip">RAG</span><span class="echip">NLP</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ EXPERIENCE ═══════════════ -->
+<section id="experience">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Experience</p>
+      <h2 class="s-title">Professional Journey</h2>
+      <div class="accent-bar"></div>
+    </div>
+    <div class="exp-timeline reveal">
+
+      <!-- DaVita Kidney Care -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card tilt" style="border:1px solid rgba(214,160,76,0.25);">
+          <div class="exp-header">
+            <span class="exp-role">Sr. Healthcare Interoperability Developer</span>
+            <span class="exp-co">DaVita Kidney Care</span>
+            <span class="exp-date">May 2019 – Present · 7+ yrs · United States</span>
+          </div>
+          <div class="exp-body">
+            <p>Architecting enterprise-scale healthcare integration and interoperability solutions for one of the largest kidney care providers in the U.S.</p>
+            <ul>
+              <li><strong>Healthcare Standards:</strong> Built FHIR R4 and HL7 v2/v3 APIs for EHR interoperability; ensured HIPAA compliance with encryption, audit logging, and PHI masking aligned to CMS/ONC mandates</li>
+              <li><strong>Integration &amp; Middleware:</strong> Architected pipelines using Apache Camel, Red Hat Fuse 6.3/7, Camel Spring Boot — applying EIPs (Content-Based Router, Splitter, Aggregator, Dead Letter Channel) across REST, JMS, Kafka</li>
+              <li><strong>API Management:</strong> Governed APIs on Apigee with OAuth 2.0, JWT, rate limiting, and threat protection; established org-wide API governance standards</li>
+              <li><strong>Cloud &amp; Infrastructure:</strong> Deployed microservices on GCP, GKE, Kubernetes, OpenShift with HPA, health probes, namespace isolation, and zero-downtime deployments</li>
+              <li><strong>Data &amp; Analytics:</strong> Integrated data sources via Denodo for unified real-time reporting; leveraged BigQuery for analytics and Cloud Spanner for transactional data</li>
+              <li><strong>DevOps:</strong> Built CI/CD pipelines with Jenkins and OpenShift Pipelines; configured Dynatrace &amp; Splunk for monitoring, alerting, and incident response</li>
+              <li><strong>AI Development:</strong> Applied AI coding tools to accelerate delivery; used AI-driven anomaly detection and automated test generation</li>
+            </ul>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;">
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">FHIR R4 · HL7</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Apigee</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Apache Camel</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Red Hat Fuse</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">GCP · GKE · Kubernetes</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Kafka · Pub/Sub</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Denodo · BigQuery</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Federated AI</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AT&T -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card tilt">
+          <div class="exp-header">
+            <span class="exp-role">Senior Consultant</span>
+            <span class="exp-co">AT&amp;T</span>
+            <span class="exp-date">Oct 2018 – May 2019 · Middletown, NJ</span>
+          </div>
+          <div class="exp-body">
+            <p>Contributed to enterprise application development using Agile methodology across a modern full-stack architecture.</p>
+            <ul>
+              <li>Designed and built Single Page Applications with Angular; implemented MVC architecture using Spring MVC and Hibernate (Spring DAO)</li>
+              <li>Developed Enterprise RESTful Web Services using Apache CXF; integrated REST, SOAP, and Swagger API tooling</li>
+              <li>Containerized applications using Docker and deployed on Kubernetes in AWS with Zero Downtime Deployment</li>
+              <li>Implemented asynchronous messaging with Apache Kafka between microservices</li>
+              <li>Built UI components with ReactJS, JSP, HTML, CSS, and AJAX; developed SQL queries against Oracle 11g</li>
+              <li>Performed TDD-based testing using JUnit, Mockito, Jasmine, and POSTMAN; used Maven for build management</li>
+            </ul>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;">
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Angular</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Spring Boot</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Docker · Kubernetes</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Kafka</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">ReactJS</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">AWS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SubCom -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card tilt">
+          <div class="exp-header">
+            <span class="exp-role">Senior Consultant</span>
+            <span class="exp-co">SubCom</span>
+            <span class="exp-date">May 2017 – Oct 2018 · Eatontown, NJ</span>
+          </div>
+          <div class="exp-body">
+            <p>Developed and maintained enterprise Java EE applications for a global submarine communications cable company, within the Network Management System (NMS) team.</p>
+            <ul>
+              <li>Built MVC architecture using Spring Framework with dependency injection via Spring services, controllers, and DAOs</li>
+              <li>Modelled high-level business processes in Enterprise Architect and Microsoft Visio using UML</li>
+              <li>Developed and integrated REST &amp; SOAP web services; created WebSockets for internal port communication in the Wet Plant Management System (WPM)</li>
+              <li>Utilized CORBA for cross-platform system collaboration; managed builds with Maven and tracked issues via JIRA</li>
+              <li>Deployed applications to AWS cloud services; performed integration, regression, and unit testing with JUnit &amp; Mockito</li>
+              <li>Used Log4J for error logging; version control with Git, CVS in a Linux/Red Hat environment</li>
+            </ul>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;">
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Java EE</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Spring MVC</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">REST · SOAP</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">WebSocket</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">AWS</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Unigo Inc. -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card tilt">
+          <div class="exp-header">
+            <span class="exp-role">Java Software Engineer</span>
+            <span class="exp-co">Unigo Inc.</span>
+            <span class="exp-date">Jan 2017 – May 2017 · Irving, TX</span>
+          </div>
+          <div class="exp-body">
+            <p>Designed and developed enterprise Java applications with a focus on backend services, REST APIs, and full-stack integration.</p>
+            <ul>
+              <li>Built server-side components using Spring Framework 4.x and Spring Boot 1.5; developed RESTful web services using Spring MVC, JAX-RS (Jersey), and Apache CXF</li>
+              <li>Implemented business logic following MVC, DAO, Factory, and Singleton design patterns</li>
+              <li>Integrated Java back-ends with AngularJS, Angular 2/4, and jQuery front-end frameworks</li>
+              <li>Developed integration flows using Apache Camel, Spring Integration, and Mule ESB; implemented async messaging with JMS, ActiveMQ, RabbitMQ, and Kafka</li>
+              <li>Deployed applications to Tomcat, JBoss/WildFly, WebLogic; deployed to AWS (EC2, S3, RDS, Elastic Beanstalk) using Docker and early Kubernetes</li>
+              <li>Managed persistence with Hibernate 4/5, JPA 2.x, and Spring Data JPA across Oracle, MySQL, PostgreSQL, and MongoDB</li>
+            </ul>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;">
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Spring Boot</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Apache Camel</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Kafka · RabbitMQ</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Hibernate · JPA</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">AWS · Docker</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pinnacle Systems -->
+      <div class="exp-item">
+        <div class="exp-dot"></div>
+        <div class="exp-card tilt">
+          <div class="exp-header">
+            <span class="exp-role">Business Analyst</span>
+            <span class="exp-co">Pinnacle Systems</span>
+            <span class="exp-date">Dec 2016 – Jan 2017 · Irving, TX</span>
+          </div>
+          <div class="exp-body">
+            <p>Bridged business requirements and technical implementation across Spring Boot microservices and enterprise Java applications.</p>
+            <ul>
+              <li>Elicited business requirements and translated them into functional specifications, technical user stories, and acceptance criteria with end-to-end traceability</li>
+              <li>Read, analyzed, and modified Java 8/11/17 code across Spring Boot microservices; developed POCs using Spring Boot, Spring Data JPA, and REST APIs</li>
+              <li>Defined and documented REST API specifications (OpenAPI/Swagger); validated API behavior using Postman and log inspection</li>
+              <li>Analyzed Kafka, RabbitMQ, and Apache Camel message flows; mapped source-to-target fields for system integrations and ETL flows</li>
+              <li>Wrote and optimized complex SQL queries against Oracle, PostgreSQL, and MySQL; built ad-hoc reports using Power BI and Tableau</li>
+            </ul>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem;">
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Java · Spring Boot</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">OpenAPI · Swagger</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Power BI · Tableau</span>
+              <span style="padding:0.2rem 0.6rem;border-radius:5px;font-size:0.7rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">SQL · Oracle</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── Highlighted Roles ── -->
+    <div style="display:flex;flex-wrap:wrap;gap:2rem;margin-top:3.5rem;" class="reveal">
+
+      <!-- Published Researcher highlight -->
+      <div style="
+        flex:1;min-width:320px;padding:2.2rem;border-radius:20px;
+        background:linear-gradient(135deg,rgba(214,160,76,0.06),rgba(214,160,76,0.02));
+        border:1px solid rgba(214,160,76,0.25);
+        position:relative;overflow:hidden;
+      ">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#D6A04C,#b8862e,#f59e0b);"></div>
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;">
+          <div style="
+            width:56px;height:56px;border-radius:50%;
+            background:linear-gradient(135deg,#D6A04C,#b8862e);
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.5rem;box-shadow:0 0 20px rgba(214,160,76,0.3);
+          ">📚</div>
+          <div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);margin:0;">Published Researcher &amp; Technical Author</h3>
+            <p style="font-size:0.85rem;color:var(--gold);font-family:'JetBrains Mono',monospace;margin:0.2rem 0 0;">Google Scholar · ORCID · 2024 – Present</p>
+          </div>
+        </div>
+        <ul style="font-size:0.95rem;color:var(--muted);line-height:1.8;padding-left:1.2rem;margin:0;">
+          <li><strong style="color:var(--text);">9 publications</strong> across Frontiers in Emerging AI &amp; ML, Int'l Journal of Applied Mathematics, Scientific Culture, and European Journal of EE &amp; CS</li>
+          <li><strong style="color:var(--text);">30+ citations</strong> with h-index 3 and i10-index 3 on Google Scholar</li>
+          <li><strong style="color:var(--text);">30+ peer reviews</strong> completed as invited reviewer for Scopus and Springer journals</li>
+          <li>Research spans FHIR, cloud-native microservices, federated AI, and LLM orchestration for healthcare</li>
+        </ul>
+      </div>
+
+      <!-- Industry Judge highlight -->
+      <div style="
+        flex:1;min-width:320px;padding:2.2rem;border-radius:20px;
+        background:linear-gradient(135deg,rgba(179,157,219,0.06),rgba(179,157,219,0.02));
+        border:1px solid rgba(179,157,219,0.25);
+        position:relative;overflow:hidden;
+      ">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#b39ddb,#9575cd,#7c4dff);"></div>
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.2rem;">
+          <div style="
+            width:56px;height:56px;border-radius:50%;
+            background:linear-gradient(135deg,#b39ddb,#7c4dff);
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.5rem;box-shadow:0 0 20px rgba(179,157,219,0.3);
+          ">⚖️</div>
+          <div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:var(--text);margin:0;">Industry Award Judge</h3>
+            <p style="font-size:0.85rem;color:#b39ddb;font-family:'JetBrains Mono',monospace;margin:0.2rem 0 0;">7+ Competitions · Active</p>
+          </div>
+        </div>
+        <ul style="font-size:0.95rem;color:var(--muted);line-height:1.8;padding-left:1.2rem;margin:0;">
+          <li><strong style="color:var(--text);">MIT Reality Hack 2026</strong> — XR &amp; Spatial Computing Hackathon at MIT</li>
+          <li><strong style="color:var(--text);">BIG AI Excellence Awards</strong> &amp; <strong style="color:var(--text);">BIG CX Innovation Awards</strong></li>
+          <li><strong style="color:var(--text);">Evan Kirstel's We Love Tech Awards</strong> — CES 2025, 550K+ audience</li>
+          <li><strong style="color:var(--text);">Prime Health Innovation 2026</strong> — Colorado's premier digital health competition</li>
+          <li><strong style="color:var(--text);">Philadelphia Future City 2026</strong> — National STEM engineering program</li>
+          <li><strong style="color:var(--text);">BPA National Leadership Conference 2026</strong> — Nashville, TN</li>
+        </ul>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ PUBLICATIONS ═══════════════ -->
+<section id="publications">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Research &amp; Publications</p>
+      <h2 class="s-title">Peer-Reviewed Research</h2>
+      <div class="accent-bar"></div>
+      <p class="s-sub">Contributing original research to healthcare technology, FHIR interoperability, AI/ML, and cloud engineering — indexed on Google Scholar.</p>
+    </div>
+
+    <div class="scholar-bar reveal">
+      <div class="scholar-metric">
+        <div class="sm-num">30+</div>
+        <div class="sm-lbl">Total Citations</div>
+      </div>
+      <div class="scholar-metric">
+        <div class="sm-num">3</div>
+        <div class="sm-lbl">h-index</div>
+      </div>
+      <div class="scholar-metric">
+        <div class="sm-num">3</div>
+        <div class="sm-lbl">i10-index</div>
+      </div>
+      <div class="scholar-metric">
+        <div class="sm-num">9</div>
+        <div class="sm-lbl">Publications</div>
+      </div>
+      <a href="https://scholar.google.com/citations?user=UEQqLFQAAAAJ&hl=en" target="_blank" rel="noopener" class="scholar-link-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="#4285F4"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/></svg>
+        Google Scholar →
+      </a>
+    </div>
+
+    <div class="pub-grid reveal">
+
+      <div class="pub-card tilt">
+        <div>
+          <span class="pub-badge pb-journal">Journal</span>
+          <span class="pub-cites">📈 10 citations</span>
+        </div>
+        <h3>Leveraging Apache Camel and Red Hat Fuse for Real-Time Healthcare Data Integration and Workflow Optimization</h3>
+        <p>Investigates Apache Camel and Red Hat Fuse implementations across major U.S. healthcare delivery systems, demonstrating real-time data integration improvements and workflow automation at scale.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 Frontiers in Emerging AI &amp; ML · 3(1): 33–48</span>
+            <span>👥 with V. Ayyagari · 2026</span>
+          </div>
+          <a href="https://www.researchgate.net/publication/399960693_Leveraging_Apache_Camel_and_Red_Hat_Fuse_for_Real-Time_Healthcare_Data_Integration_and_Workflow_Optimization" target="_blank" rel="noopener" class="pub-read">Read →</a>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <div>
+          <span class="pub-badge pb-journal">Journal</span>
+          <span class="pub-cites">📈 10 citations</span>
+        </div>
+        <h3>Using Denodo and Google Pub/Sub for Unified Data Access Across Distributed Healthcare Systems</h3>
+        <p>Presents a data virtualization framework using Denodo and Google Pub/Sub to provide unified, real-time data access across distributed healthcare systems without data movement.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 European Journal of EE &amp; CS · 9(6): 20–27</span>
+            <span>👥 with V. Ayyagari · 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <div>
+          <span class="pub-badge pb-journal">Journal</span>
+          <span class="pub-cites">📈 10 citations</span>
+        </div>
+        <h3>Migrating Legacy Healthcare Systems to Cloud-Native Microservices with AI: Best Practices and Pitfalls</h3>
+        <p>Comprehensive analysis of AI-assisted migration strategies for legacy healthcare systems, covering risk patterns, cost optimization, and HIPAA compliance preservation throughout migration.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 Int'l Journal of Applied Mathematics · 38(2s): 914–949</span>
+            <span>📅 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <span class="pub-badge pb-research">Journal</span>
+        <h3>Building Scalable Backend Systems for Patient-Centric Applications Using Spring Boot and Kubernetes</h3>
+        <p>Examines architectural patterns for highly available, patient-centric backend systems using Spring Boot microservices orchestrated with Kubernetes, with focus on healthcare data sovereignty.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 Scientific Culture · 12(4): 91–103</span>
+            <span>👥 with V. Ayyagari, S.R. Katta · 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <span class="pub-badge pb-research">Conference · 2026</span>
+        <h3>Multi-Modal AI for Early Detection of Dialysis Complications Using EHR, Machine, and Sensor Data</h3>
+        <p>Proposes a multi-modal AI framework fusing EHR records, dialysis machine telemetry, and wearable sensor data for early detection of life-threatening complications in end-stage kidney disease patients.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 International Auditors for Digital &amp; Data Management Association</span>
+            <span>📅 2026</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <span class="pub-badge pb-article">Preprint · 2026</span>
+        <h3>AI in HRM: Enhancing Workforce Competency and Organizational Effectiveness</h3>
+        <p>Examines the transformative role of Artificial Intelligence in Human Resource Management, presenting frameworks for AI-driven workforce competency development and measuring organizational effectiveness through intelligent HR systems.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 SSRN · No. 6762998</span>
+            <span>👥 with K. Rekulapalli, V. Ayyagari, A. Akula, R. Raj Akula · 2026</span>
+          </div>
+          <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6762998" target="_blank" rel="noopener" class="pub-read">Read →</a>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <span class="pub-badge pb-conf">Conference</span>
+        <h3>Federated AI for Secure and Scalable Clinical Diagnostics: From Architecture to Real-World Deployment</h3>
+        <p>Presents federated learning architecture for clinical diagnostics preserving patient privacy while achieving scalable AI model training across distributed hospital networks.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 Int'l Conference on Innovations in Computing &amp; Automation</span>
+            <span>📅 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <span class="pub-badge pb-research">Research</span>
+        <h3>A HIPAA-Compliant Big Data Architecture for Real-Time Health Benefits Navigation Using Conversational AI</h3>
+        <p>Designs a HIPAA-compliant big data pipeline enabling real-time health benefits navigation through conversational AI, helping patients and administrators query complex insurance data naturally.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>👥 with N.S. Mrunal, V. Ayyagari · 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pub-card tilt">
+        <span class="pub-badge pb-article">Journal</span>
+        <h3>Cloud-Native Orchestration Patterns for Multi-Agent Healthcare LLMs</h3>
+        <p>Establishes cloud-native orchestration patterns for deploying multi-agent LLM systems in healthcare, satisfying HIPAA, GDPR, and HL7 FHIR interoperability requirements simultaneously.</p>
+        <div class="pub-footer">
+          <div class="pub-meta-info">
+            <span>📖 Int'l Journal of Applied Mathematics · 38(12s): 11</span>
+            <span>👥 with V. Ayyagari, S. Joshi · 2025</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="pub-featured reveal">
+      <span class="pub-featured-label">Featured in</span>
+      <a href="https://medcitynews.com/2026/05/designing-a-national-scale-fhir-api-ecosystem-using-apigee-architecture-patterns-for-secure-healthcare-interoperability/" target="_blank" rel="noopener" class="pfl">
+        📰 Designing a National-Scale FHIR API Ecosystem Using Apigee — MedCity News 2026
+      </a>
+      <a href="https://doi.org/10.58425/ajt.v5i2.485" target="_blank" rel="noopener" class="pfl">
+        📄 Interoperability in Dialysis Platforms: FHIR &amp; Cloud APIs — American Journal of Technology 2026
+      </a>
+      <a href="https://www.netnewsledger.com/2025/07/31/keeping-dialysis-care-running-smoothly-with-smarter-data/" target="_blank" rel="noopener" class="pfl">
+        📰 Keeping Dialysis Care Running Smoothly with Smarter Data — NetNewsLedger Jul 2025
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ SPEAKING ═══════════════ -->
+<section id="speaking" style="background:var(--bg);">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Speaking Engagements</p>
+      <h2 class="s-title">Keynote & Invited Talks</h2>
+      <div class="accent-bar"></div>
+      <p class="s-sub">Invited to share expertise at international academic and industry conferences — a hallmark of recognized extraordinary ability in the field.</p>
+    </div>
+
+    <div class="reveal" style="margin-top:2.5rem;">
+      <!-- Keynote card - full width, prominent -->
+      <div style="
+        padding: 2.5rem;
+        border-radius: 20px;
+        background: var(--card);
+        border: 1px solid var(--border2);
+        box-shadow: 0 8px 40px rgba(214,160,76,0.12);
+        position: relative; overflow: hidden;
+      ">
+        <!-- gold top bar -->
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#D6A04C,#b8862e,#f59e0b);"></div>
+
+        <div style="display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap;">
+
+          <!-- Badge column -->
+          <div style="flex-shrink:0;text-align:center;">
+            <div style="
+              width:80px;height:80px;border-radius:50%;
+              background:linear-gradient(135deg,#D6A04C,#b8862e);
+              display:flex;align-items:center;justify-content:center;
+              font-size:2rem;
+              box-shadow:0 0 30px rgba(214,160,76,0.4);
+              margin-bottom:0.75rem;
+            ">🎤</div>
+            <span style="
+              display:inline-block;padding:0.25rem 0.75rem;border-radius:6px;
+              font-size:0.68rem;font-weight:700;letter-spacing:0.06em;
+              background:rgba(214,160,76,0.15);color:var(--gold);
+              border:1px solid rgba(214,160,76,0.3);
+            ">KEYNOTE SPEAKER</span>
+          </div>
+
+          <!-- Content column -->
+          <div style="flex:1;min-width:260px;">
+            <div style="font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:0.6rem;">
+              Official Keynote Invitation · ICAEAS 2025
+            </div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;line-height:1.4;margin-bottom:1rem;color:var(--text);">
+              "Federated AI for Secure and Scalable Clinical Diagnostics: From Architecture to Real-World Deployment"
+            </h3>
+            <p style="font-size:0.88rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem;">
+              Officially invited as a <strong style="color:var(--text);">Keynote Speaker</strong> at ICAEAS 2025
+              — an international academic conference — to present original research on deploying federated AI
+              architectures for clinical diagnostics at scale. Keynote invitations are reserved exclusively for
+              recognized domain leaders, confirming Sai Rupesh Kagga's standing as a foremost authority in
+              AI-driven healthcare systems. The talk draws on first-hand implementation experience with
+              HIPAA, GDPR, and HL7 FHIR-compliant federated learning across distributed hospital networks.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.6rem;">
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Federated AI</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">Clinical Diagnostics</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">HIPAA / GDPR</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">HL7 FHIR</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(214,160,76,0.10);color:var(--gold);border:1px solid rgba(214,160,76,0.2);">International Conference</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal" style="margin-top:2rem;">
+      <!-- WCSC2026 Keynote card -->
+      <div style="
+        padding: 2.5rem;
+        border-radius: 20px;
+        background: var(--card);
+        border: 1px solid rgba(179,157,219,0.35);
+        box-shadow: 0 8px 40px rgba(179,157,219,0.1);
+        position: relative; overflow: hidden;
+      ">
+        <!-- purple top bar -->
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#b39ddb,#9575cd,#7c4dff);"></div>
+
+        <div style="display:flex;align-items:flex-start;gap:2rem;flex-wrap:wrap;">
+
+          <!-- Badge column -->
+          <div style="flex-shrink:0;text-align:center;">
+            <div style="
+              width:80px;height:80px;border-radius:50%;
+              background:linear-gradient(135deg,#b39ddb,#7c4dff);
+              display:flex;align-items:center;justify-content:center;
+              font-size:2rem;
+              box-shadow:0 0 30px rgba(179,157,219,0.4);
+              margin-bottom:0.75rem;
+            ">🌏</div>
+            <span style="
+              display:inline-block;padding:0.25rem 0.75rem;border-radius:6px;
+              font-size:0.68rem;font-weight:700;letter-spacing:0.06em;
+              background:rgba(179,157,219,0.15);color:#b39ddb;
+              border:1px solid rgba(179,157,219,0.3);
+            ">KEYNOTE SPEAKER</span>
+          </div>
+
+          <!-- Content column -->
+          <div style="flex:1;min-width:260px;">
+            <div style="font-size:0.72rem;color:#b39ddb;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:0.6rem;">
+              Official Keynote Invitation · WCSC 2026
+            </div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;line-height:1.4;margin-bottom:1rem;color:var(--text);">
+              "Multi-Modal AI for Early Detection of Dialysis Complications Using EHR, Machine, and Sensor Data"
+            </h3>
+            <p style="font-size:0.88rem;color:var(--muted);line-height:1.75;margin-bottom:1.25rem;">
+              Invited as a <strong style="color:var(--text);">Keynote Speaker</strong> at the <strong style="color:var(--text);">3rd World Congress on Smart Computing (WCSC2026)</strong> —
+              January 10–11, 2026, Novotel Bangkok on Siam Square, Bangkok, Thailand. Organized by the
+              Soft Computing Research Society and the International Auditors for Digital and Data Management Association.
+              Proceedings published in the prestigious <strong style="color:var(--text);">Springer Book Series "Lecture Notes in Networks and Systems."</strong>
+              This talk presents a novel multi-modal AI pipeline integrating Electronic Health Records, machine telemetry,
+              and wearable sensor streams for proactive dialysis complication detection.
+            </p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.6rem;margin-bottom:1rem;">
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(179,157,219,0.10);color:#b39ddb;border:1px solid rgba(179,157,219,0.25);">Multi-Modal AI</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(179,157,219,0.10);color:#b39ddb;border:1px solid rgba(179,157,219,0.25);">Dialysis & Renal Care</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(179,157,219,0.10);color:#b39ddb;border:1px solid rgba(179,157,219,0.25);">EHR Integration</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(179,157,219,0.10);color:#b39ddb;border:1px solid rgba(179,157,219,0.25);">Springer Publication</span>
+              <span style="padding:0.25rem 0.75rem;border-radius:6px;font-size:0.72rem;font-weight:600;background:rgba(179,157,219,0.10);color:#b39ddb;border:1px solid rgba(179,157,219,0.25);">Bangkok · Jan 2026</span>
+            </div>
+            <a href="https://scrs.in/conference/wcsc2026" target="_blank" rel="noopener" style="
+              display:inline-flex;align-items:center;gap:0.5rem;
+              padding:0.5rem 1.1rem;border-radius:8px;font-size:0.8rem;font-weight:600;
+              background:rgba(179,157,219,0.12);color:#b39ddb;
+              border:1px solid rgba(179,157,219,0.3);text-decoration:none;
+              transition:background 0.2s;
+            ">🔗 View Conference →</a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════ RECOGNITION ═══════════════ -->
+<section id="recognition">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Recognition</p>
+      <h2 class="s-title">Awards &amp; Industry Recognition</h2>
+      <div class="accent-bar"></div>
+      <p class="s-sub">Recognized by global industry bodies as an expert in AI, healthcare technology, and enterprise innovation.</p>
+    </div>
+    <div class="rec-grid">
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
+        <div class="rcard-glow" style="background:#f59e0b;"></div>
+        <div class="rcard-icon">🏆</div>
+        <h3>AI Excellence Award Judge</h3>
+        <div class="rcard-org" style="color:var(--gold);">Business Intelligence Group</div>
+        <p>Evaluates submissions for the Artificial Intelligence Excellence Awards — one of the industry's most respected AI recognition programs — assessing real-world AI innovation and impact across industries.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,var(--blue),var(--cyan));"></div>
+        <div class="rcard-glow" style="background:var(--blue);"></div>
+        <div class="rcard-icon">⭐</div>
+        <h3>Customer Service Excellence Judge</h3>
+        <div class="rcard-org" style="color:var(--cyan);">Business Intelligence Group</div>
+        <p>Selected to evaluate technology-driven customer experience transformations for the Excellence in Customer Service Awards, identifying organizations leveraging tech for exceptional outcomes.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,var(--purple),#a78bfa,#D6A04C);"></div>
+        <div class="rcard-glow" style="background:var(--purple);"></div>
+        <div class="rcard-icon">💡</div>
+        <h3>Judge — Evan Kirstel's We Love Tech Awards</h3>
+        <div class="rcard-org" style="color:var(--purple);">Business Intelligence Group · Est. CES 2025</div>
+        <p>Selected as one of ~400 expert judges for <strong style="color:var(--text);">Evan Kirstel's We Love Tech Awards</strong> — launched at CES 2025 by top B2B tech influencer Evan Kirstel (550K+ followers across LinkedIn, YouTube &amp; podcasts) in partnership with Business Intelligence Group. Evaluates breakthrough enterprise tech across AI, cloud, cybersecurity, SaaS, and IoT across 15 solution categories.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,var(--blue),var(--cyan));"></div>
+        <div class="rcard-glow" style="background:var(--cyan);"></div>
+        <div class="rcard-icon">📰</div>
+        <h3>MedCity News Contributor</h3>
+        <div class="rcard-org" style="color:var(--cyan);">MedCity Influencers</div>
+        <p>Featured as a thought leader and technical authority on FHIR API ecosystems in MedCity News — a premier publication covering the business of healthcare innovation.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,var(--green),#34d399);"></div>
+        <div class="rcard-glow" style="background:var(--green);"></div>
+        <div class="rcard-icon">🔬</div>
+        <h3>ORCID Verified Researcher</h3>
+        <div class="rcard-org" style="color:var(--green);">ORCID · 0009-0000-7893-3861</div>
+        <p>Holds a verified ORCID researcher identity with peer-reviewed publications indexed on Google Scholar, establishing a credible scientific record in healthcare informatics.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#4285F4,#34a853);"></div>
+        <div class="rcard-glow" style="background:#4285F4;"></div>
+        <div class="rcard-icon">🎓</div>
+        <h3>Google Scholar Indexed Author</h3>
+        <div class="rcard-org" style="color:#4285F4;">Google Scholar</div>
+        <p>9 publications with 30+ citations, h-index 3, and i10-index 3 — making contributions to healthcare interoperability accessible to the global research community.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#D6A04C,#b8862e);"></div>
+        <div class="rcard-glow" style="background:#D6A04C;"></div>
+        <div class="rcard-icon">📝</div>
+        <h3>Peer Reviewer — Scopus &amp; Springer</h3>
+        <div class="rcard-org" style="color:var(--gold);">Scopus · Springer Journals</div>
+        <p>Invited as a peer reviewer for <strong style="color:var(--text);">30+ manuscripts</strong> across Scopus-indexed and Springer journals — a recognition by the global academic community of expertise in healthcare technology, cloud engineering, and AI integration. Peer review roles are extended only to recognized domain experts.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#10b981,#059669);"></div>
+        <div class="rcard-glow" style="background:#10b981;"></div>
+        <div class="rcard-icon">🏥</div>
+        <h3>Judge — Prime Health Innovation Challenge 2026</h3>
+        <div class="rcard-org" style="color:#10b981;">Prime Health · Colorado</div>
+        <p>Selected as an expert judge for the <strong style="color:var(--text);">Prime Health Innovation Challenge 2026</strong> — Colorado's premier digital health innovation competition running since 2014, focused on achieving the Quadruple Aim: better patient experience, better provider experience, improved population health, and lower costs. Judges evaluate pioneering digital health companies seeking to pilot solutions with major healthcare organizations across a rigorous 3-round judging process.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#3b82f6,#2563eb);"></div>
+        <div class="rcard-glow" style="background:#3b82f6;"></div>
+        <div class="rcard-icon">🏙️</div>
+        <h3>Judge — Philadelphia Future City Competition 2026</h3>
+        <div class="rcard-org" style="color:#60a5fa;">DiscoverE · Philadelphia Region</div>
+        <p>Invited as a judge for the <strong style="color:var(--text);">2026 Philadelphia Future City Competition</strong> — a national STEM engineering program where middle school students (Grades 6–8) design and present cities of the future. The 2026 theme is <em>"Farm to Table."</em> Regional finals held in Philadelphia; national finals in Washington, D.C. Being chosen as a judge reflects recognized expertise across engineering, technology, and innovation.</p>
+      </div>
+
+      <div class="rcard tilt reveal">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#D6A04C,#f59e0b);"></div>
+        <div class="rcard-glow" style="background:#D6A04C;"></div>
+        <div class="rcard-icon">🎓</div>
+        <h3>Judge — BPA National Leadership Conference 2026</h3>
+        <div class="rcard-org" style="color:var(--gold);">Business Professionals of America · Nashville, TN</div>
+        <p>Invited as a judge at the <strong style="color:var(--text);">Business Professionals of America (BPA) National Leadership Conference 2026</strong> — held May 6–10 at the Gaylord Opryland Resort &amp; Convention Center, Nashville, Tennessee. BPA is one of the nation's largest student business organizations, and the NLC is its flagship competitive event, drawing thousands of students from across the U.S. competing in business, technology, and leadership disciplines.</p>
+      </div>
+
+      <div class="rcard tilt reveal" style="grid-column: 1 / -1;">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#D6A04C,#b8862e,#7c3aed);"></div>
+        <div class="rcard-glow" style="background:#7c3aed;"></div>
+        <div style="display:flex; align-items:flex-start; gap:2rem; flex-wrap:wrap;">
+          <div style="flex:0 0 auto;">
+            <div class="rcard-icon">🥽</div>
+            <h3>MIT Reality Hack 2026 — Judge</h3>
+            <div class="rcard-org" style="color:#a78bfa;">Massachusetts Institute of Technology</div>
+          </div>
+          <div style="flex:1; min-width:260px;">
+            <p>Selected as a judge for <strong style="color:var(--text);">MIT Reality Hack 2026</strong> — one of the world's premier XR (Extended Reality / AR &amp; VR) hackathons held at MIT, Cambridge MA, co-organized by VR/AR@MIT and sponsored by Qualcomm. Participants build cutting-edge spatial computing prototypes judged by global technology leaders. Being selected as a judge places Sai Rupesh among an elite group of innovators shaping the future of immersive technology.</p>
+            <a href="https://www.linkedin.com/feed/update/urn:li:activity:7422095288842072064/" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.85rem;font-size:0.78rem;font-weight:600;color:#a78bfa;text-decoration:none;">
+              View LinkedIn Announcement →
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ IMPACT ═══════════════ -->
+<section id="impact">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Impact</p>
+      <h2 class="s-title">Quantified Contributions</h2>
+      <div class="accent-bar"></div>
+    </div>
+    <div class="impact-grid reveal">
+      <div class="icard">
+        <div class="icard-num">9+</div>
+        <div class="icard-lbl">Years Enterprise Software Experience</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">7+</div>
+        <div class="icard-lbl">Years Healthcare Technology Innovation</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">5+</div>
+        <div class="icard-lbl">Years FHIR Integration with Major Health Systems</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">9</div>
+        <div class="icard-lbl">Research Publications</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">30+</div>
+        <div class="icard-lbl">Total Research Citations</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">7</div>
+        <div class="icard-lbl">Industry Judging Roles incl. MIT, Prime Health, BPA</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">30+</div>
+        <div class="icard-lbl">Peer Reviews for Scopus &amp; Springer Journals</div>
+      </div>
+      <div class="icard">
+        <div class="icard-num">40%</div>
+        <div class="icard-lbl">Reduction in Manual Audit Time via Billing Reconciliation System</div>
+      </div>
+    </div>
+
+    <div class="eb1a-callout reveal">
+      <div class="eb1a-badge">⚡</div>
+      <div class="eb1a-text">
+        <h3>Extraordinary Ability in Healthcare Technology</h3>
+        <p>
+          Sai Rupesh Kagga's body of work represents a rare convergence of
+          <strong>deep technical expertise</strong>, <strong>original research contributions</strong>,
+          and <strong>recognized industry authority</strong>. As a published researcher with 30+ citations,
+          an <strong>invited Keynote Speaker at ICAEAS 2025</strong>, a judge across
+          <strong>7 global programs</strong> including MIT Reality Hack 2026 and Prime Health Innovation,
+          a <strong>peer reviewer for 30+ manuscripts</strong> in Scopus and Springer journals,
+          and the architect of national-scale healthcare API ecosystems — he has demonstrated sustained,
+          extraordinary contributions to healthcare interoperability and emerging technology
+          with direct impact on millions of patients across the United States.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CERTIFICATIONS ═══════════════ -->
+<section id="certifications" style="background:var(--bg2);">
+  <div class="section-wrap">
+    <div>
+      <p class="s-label">Certifications</p>
+      <h2 class="s-title">Professional Certifications</h2>
+      <div class="accent-bar"></div>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap:1.5rem; margin-top:2rem;">
+
+      <div class="rcard tilt" style="display:flex; align-items:center; gap:1.75rem; flex:1; min-width:280px; padding:1.75rem 2rem;">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#f59e0b,#ff9900);"></div>
+        <!-- AWS logo approximation -->
+        <div style="
+          width:64px; height:64px; border-radius:14px; flex-shrink:0;
+          background:linear-gradient(135deg,#232f3e,#131a22);
+          display:flex; align-items:center; justify-content:center;
+          font-size:0.7rem; font-weight:800; letter-spacing:-0.02em; text-align:center;
+          color:#ff9900; border:1px solid rgba(255,153,0,0.3);
+          box-shadow: 0 0 24px rgba(255,153,0,0.2);
+          line-height:1.3; padding:0.4rem;
+        ">AWS<br/>☁️</div>
+        <div>
+          <div style="font-size:0.72rem; color:#ff9900; font-weight:600; letter-spacing:0.06em; margin-bottom:0.35rem; font-family:'JetBrains Mono',monospace;">AMAZON WEB SERVICES</div>
+          <h3 style="font-family:'Space Grotesk',sans-serif; font-size:1.05rem; font-weight:700; margin-bottom:0.3rem;">AWS Solutions Architect</h3>
+          <div style="font-size:0.85rem; color:var(--muted); margin-bottom:0.5rem;">Associate Level · <span style="font-family:'JetBrains Mono',monospace; font-size:0.78rem; color:#ff9900;">SAA-C02</span></div>
+          <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+            <span style="
+              padding:0.2rem 0.7rem; border-radius:6px;
+              font-size:0.72rem; font-weight:600;
+              background:rgba(255,153,0,0.1); color:#ff9900;
+              border:1px solid rgba(255,153,0,0.25);
+            ">✓ Certified 2021</span>
+            <span style="font-size:0.75rem; color:var(--muted);">Issued by Amazon Web Services</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ EDUCATION ═══════════════ -->
+<section id="education" style="background:var(--bg);">
+  <div class="section-wrap">
+    <div class="reveal">
+      <p class="s-label">Education</p>
+      <h2 class="s-title">Academic Foundation</h2>
+      <div class="accent-bar"></div>
+    </div>
+    <div style="display:flex;flex-wrap:wrap;gap:1.5rem;margin-top:2.5rem;" class="reveal">
+
+      <!-- Master's -->
+      <div class="rcard tilt" style="flex:1;min-width:280px;padding:2rem;position:relative;overflow:hidden;">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#D6A04C,#b8862e);"></div>
+        <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+          <div style="
+            width:64px;height:64px;border-radius:14px;flex-shrink:0;
+            background:linear-gradient(135deg,#D6A04C,#b8862e);
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.6rem;
+            box-shadow:0 0 24px rgba(214,160,76,0.25);
+          ">🎓</div>
+          <div>
+            <div style="font-size:0.72rem;color:var(--gold);font-weight:600;letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;margin-bottom:0.4rem;">MASTER'S DEGREE</div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;">Computer Information Systems</h3>
+            <p style="font-size:0.9rem;color:var(--muted);margin-bottom:0.4rem;">Southern Arkansas University</p>
+            <span style="
+              display:inline-block;padding:0.2rem 0.7rem;border-radius:6px;
+              font-size:0.72rem;font-weight:600;
+              background:rgba(214,160,76,0.10);color:var(--gold);
+              border:1px solid rgba(214,160,76,0.2);
+            ">January 2015 – August 2016</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bachelor's -->
+      <div class="rcard tilt" style="flex:1;min-width:280px;padding:2rem;position:relative;overflow:hidden;">
+        <div class="rcard-top" style="background:linear-gradient(90deg,#b39ddb,#9575cd);"></div>
+        <div style="display:flex;align-items:flex-start;gap:1.5rem;">
+          <div style="
+            width:64px;height:64px;border-radius:14px;flex-shrink:0;
+            background:linear-gradient(135deg,#b39ddb,#7c4dff);
+            display:flex;align-items:center;justify-content:center;
+            font-size:1.6rem;
+            box-shadow:0 0 24px rgba(179,157,219,0.25);
+          ">🎓</div>
+          <div>
+            <div style="font-size:0.72rem;color:#b39ddb;font-weight:600;letter-spacing:0.08em;font-family:'JetBrains Mono',monospace;margin-bottom:0.4rem;">BACHELOR OF ENGINEERING</div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:0.3rem;">Electronics &amp; Communications Engineering</h3>
+            <p style="font-size:0.9rem;color:var(--muted);margin-bottom:0.4rem;">JNTUH College of Engineering Hyderabad</p>
+            <span style="
+              display:inline-block;padding:0.2rem 0.7rem;border-radius:6px;
+              font-size:0.72rem;font-weight:600;
+              background:rgba(179,157,219,0.10);color:#b39ddb;
+              border:1px solid rgba(179,157,219,0.2);
+            ">Hyderabad, India</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ CONTACT ═══════════════ -->
+<section id="contact">
+  <div class="section-wrap">
+    <div class="contact-inner reveal">
+      <p class="s-label" style="justify-content:center;">Contact</p>
+      <h2 class="s-title">Let's Connect</h2>
+      <div class="accent-bar" style="margin-inline:auto;"></div>
+      <p style="color:var(--muted);font-size:0.95rem;line-height:1.75;">
+        Open to research collaborations, speaking engagements, healthcare technology consulting,
+        and strategic partnerships. Let's build the future of healthcare interoperability together.
+      </p>
+      <div class="contact-links">
+        <a href="https://www.linkedin.com/in/sai-rupesh-kagga/" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          LinkedIn
+        </a>
+        <a href="https://scholar.google.com/citations?user=UEQqLFQAAAAJ&hl=en" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="#4285F4"><path d="M12 24a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm0-24L0 9.5l4.838 3.94A8 8 0 0 1 12 9a8 8 0 0 1 7.162 4.44L24 9.5z"/></svg>
+          Google Scholar
+        </a>
+        <a href="https://orcid.org/0009-0000-7893-3861" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="#a6ce39"><path d="M12 0C5.372 0 0 5.372 0 12s5.372 12 12 12 12-5.372 12-12S18.628 0 12 0zM7.369 4.378c.525 0 .947.431.947.947s-.422.947-.947.947a.95.95 0 01-.947-.947c0-.525.422-.947.947-.947zm-.722 3.038h1.444v10.041H6.647V7.416zm3.562 0h3.9c3.712 0 5.344 2.653 5.344 5.025 0 2.578-2.016 5.016-5.325 5.016h-3.919V7.416zm1.444 1.303v7.444h2.297c3.272 0 3.872-2.484 3.872-3.722 0-2.016-1.284-3.722-3.862-3.722h-2.307z"/></svg>
+          ORCID
+        </a>
+        <a href="https://www.bintelligence.com/judge/sai-rupesh-kagga" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          BIG Judge Profile
+        </a>
+        <a href="https://doi.org/10.58425/ajt.v5i2.485" target="_blank" rel="noopener" class="clink">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/></svg>
+          Published Research
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2026 Sai Rupesh Kagga &nbsp;·&nbsp; Senior Software Developer &amp; Healthcare Interoperability Architect</p>
+  <p>
+    <a href="https://orcid.org/0009-0000-7893-3861" target="_blank" rel="noopener">ORCID: 0009-0000-7893-3861</a>
+    &nbsp;·&nbsp; SanQuest Inc, United States
+    &nbsp;·&nbsp;
+    <a href="https://scholar.google.com/citations?user=UEQqLFQAAAAJ&hl=en" target="_blank" rel="noopener">Google Scholar</a>
+  </p>
+</footer>
+
+<!-- ═══════════════ SCRIPTS ═══════════════ -->
+<script>
+/* ── THREE.JS PARTICLE NETWORK ── */
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 2000);
+  camera.position.z = 500;
+
+  /* particles */
+  const COUNT = 200;
+  const positions = new Float32Array(COUNT * 3);
+  const nodes = [];
+  for (let i = 0; i < COUNT; i++) {
+    const x = (Math.random() - 0.5) * 1200;
+    const y = (Math.random() - 0.5) * 800;
+    const z = (Math.random() - 0.5) * 400;
+    positions[i * 3]     = x;
+    positions[i * 3 + 1] = y;
+    positions[i * 3 + 2] = z;
+    nodes.push({ x, y, z, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3, vz: (Math.random() - 0.5) * 0.1 });
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  const mat = new THREE.PointsMaterial({ color: 0xD6A04C, size: 2, transparent: true, opacity: 0.5 });
+  const points = new THREE.Points(geo, mat);
+  scene.add(points);
+
+  /* lines between nearby nodes */
+  const lineMat = new THREE.LineBasicMaterial({ color: 0xb8862e, transparent: true, opacity: 0.15 });
+  const lineGeo = new THREE.BufferGeometry();
+  const linePositions = [];
+  const THRESHOLD = 180;
+  for (let i = 0; i < COUNT; i++) {
+    for (let j = i + 1; j < COUNT; j++) {
+      const dx = nodes[i].x - nodes[j].x;
+      const dy = nodes[i].y - nodes[j].y;
+      const dz = nodes[i].z - nodes[j].z;
+      if (Math.sqrt(dx*dx+dy*dy+dz*dz) < THRESHOLD) {
+        linePositions.push(nodes[i].x, nodes[i].y, nodes[i].z, nodes[j].x, nodes[j].y, nodes[j].z);
+      }
+    }
+  }
+  lineGeo.setAttribute('position', new THREE.Float32BufferAttribute(linePositions, 3));
+  scene.add(new THREE.LineSegments(lineGeo, lineMat));
+
+  /* large glowing sphere */
+  const sphereGeo = new THREE.SphereGeometry(160, 32, 32);
+  const sphereMat = new THREE.MeshBasicMaterial({ color: 0xD6A04C, wireframe: true, transparent: true, opacity: 0.04 });
+  const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+  sphere.position.set(300, -100, -200);
+  scene.add(sphere);
+
+  /* second accent torus */
+  const torusGeo = new THREE.TorusGeometry(120, 1.5, 16, 80);
+  const torusMat = new THREE.MeshBasicMaterial({ color: 0xD6A04C, transparent: true, opacity: 0.06 });
+  const torus = new THREE.Mesh(torusGeo, torusMat);
+  torus.position.set(-300, 120, -150);
+  torus.rotation.x = Math.PI / 4;
+  scene.add(torus);
+
+  let mouse = { x: 0, y: 0 };
+  window.addEventListener('mousemove', e => {
+    mouse.x = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouse.y = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  let t = 0;
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.005;
+
+    /* animate particles */
+    const pos = geo.attributes.position.array;
+    for (let i = 0; i < COUNT; i++) {
+      nodes[i].x += nodes[i].vx;
+      nodes[i].y += nodes[i].vy;
+      nodes[i].z += nodes[i].vz;
+      if (Math.abs(nodes[i].x) > 600) nodes[i].vx *= -1;
+      if (Math.abs(nodes[i].y) > 400) nodes[i].vy *= -1;
+      if (Math.abs(nodes[i].z) > 200) nodes[i].vz *= -1;
+      pos[i * 3]     = nodes[i].x;
+      pos[i * 3 + 1] = nodes[i].y;
+      pos[i * 3 + 2] = nodes[i].z;
+    }
+    geo.attributes.position.needsUpdate = true;
+
+    points.rotation.y = t * 0.04 + mouse.x * 0.08;
+    points.rotation.x = mouse.y * 0.05;
+    sphere.rotation.y = t * 0.12;
+    sphere.rotation.x = t * 0.07;
+    torus.rotation.z  = t * 0.1;
+    torus.rotation.y  = t * 0.05;
+
+    camera.position.x += (mouse.x * 30 - camera.position.x) * 0.05;
+    camera.position.y += (-mouse.y * 20 - camera.position.y) * 0.05;
+    camera.lookAt(scene.position);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+
+/* ── GSAP HERO ENTRANCE ── */
+gsap.registerPlugin(ScrollTrigger);
+
+const heroTl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+heroTl
+  .to('#hero-photo',   { opacity: 1, y: 0, duration: 0.7, delay: 0.2 })
+  .to('#hero-eyebrow', { opacity: 1, y: 0, duration: 0.7 }, '-=0.3')
+  .to('#hero-name',    { opacity: 1, y: 0, duration: 0.8 }, '-=0.3')
+  .to('#hero-title',   { opacity: 1, y: 0, duration: 0.7 }, '-=0.4')
+  .to('#hero-div',     { opacity: 1, duration: 0.5 }, '-=0.3')
+  .to('#hero-tags',    { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
+  .to('#hero-cta',     { opacity: 1, y: 0, duration: 0.6 }, '-=0.3')
+  .to('#hero-stats',   { opacity: 1, y: 0, duration: 0.6 }, '-=0.2')
+  .to('#scroll-hint',  { opacity: 1, duration: 0.5 }, '-=0.1');
+
+/* ── SCROLL REVEALS ── */
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.fromTo(el,
+    { opacity: 0, y: 40 },
+    {
+      opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
+      scrollTrigger: { trigger: el, start: 'top 88%', toggleActions: 'play none none none' }
+    }
+  );
+});
+
+/* ── NAV SCROLL STATE ── */
+window.addEventListener('scroll', () => {
+  document.getElementById('main-nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ── 3D TILT EFFECT ── */
+document.querySelectorAll('.tilt').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const rect = card.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width  - 0.5;
+    const y = (e.clientY - rect.top)  / rect.height - 0.5;
+    card.style.transform = `perspective(800px) rotateY(${x * 10}deg) rotateX(${-y * 8}deg) translateY(-4px)`;
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = '';
+  });
+});
+</script>
+
+</body>
+</html>
