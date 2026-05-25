@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://sairupeshkagga.github.io/portfolio/sitemap.xml
+Sitemap: https://saikinfo15-arch.github.io/portfolio/sitemap.xml
